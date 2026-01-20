@@ -1,0 +1,51 @@
+/* assets/css/main.css */
+/* ✅ Element Plus 样式覆盖（使用 TailwindCSS 主题） */
+
+/* 修改 Element Plus 主题色为 TailwindCSS 的 primary */
+:root {
+    --el-color-primary: rgb(64 158 255);
+    --el-color-primary-light-3: rgb(145 202 255);
+    --el-color-primary-light-5: rgb(186 224 255);
+    --el-color-primary-light-7: rgb(217 236 255);
+    --el-color-primary-light-8: rgb(230 244 255);
+    --el-color-primary-light-9: rgb(242 249 255);
+    --el-color-primary-dark-2: rgb(50 117 230);
+  }
+  
+  /* 暗黑模式 */
+  .dark {
+    --el-bg-color: rgb(17 24 39);
+    --el-bg-color-page: rgb(17 24 39);
+    --el-bg-color-overlay: rgb(31 41 55);
+    --el-text-color-primary: rgb(243 244 246);
+    --el-text-color-regular: rgb(209 213 219);
+    --el-text-color-secondary: rgb(156 163 175);
+    --el-text-color-placeholder: rgb(107 114 128);
+    --el-border-color: rgb(55 65 81);
+    --el-border-color-light: rgb(55 65 81);
+    --el-border-color-lighter: rgb(55 65 81);
+    --el-border-color-extra-light: rgb(55 65 81);
+    --el-border-color-dark: rgb(75 85 99);
+    --el-fill-color: rgb(31 41 55);
+    --el-fill-color-light: rgb(55 65 81);
+    --el-fill-color-lighter: rgb(55 65 81);
+    --el-fill-color-extra-light: rgb(55 65 81);
+    --el-fill-color-dark: rgb(75 85 99);
+    --el-fill-color-darker: rgb(75 85 99);
+    --el-fill-color-blank: transparent;
+  }
+  
+  /* Element Plus 组件样式微调 */
+  .el-message-box {
+    @apply max-w-[90vw];
+  }
+  
+  .el-dialog {
+    @apply rounded-lg;
+  }
+  
+  /* 平滑过渡 */
+  html,
+  html.dark {
+    @apply transition-colors duration-300;
+  }

@@ -1,0 +1,59 @@
+/* assets/css/tailwind.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 基础样式 */
+@layer base {
+  html,
+  body,
+  #__nuxt {
+    @apply w-full h-full overflow-hidden;
+  }
+
+  /* ✅ 浅色模式 */
+  body {
+    @apply bg-gray-50 text-gray-900;
+    font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+      'Microsoft YaHei', Arial, sans-serif;
+  }
+
+  /* ✅ 深色模式 */
+  .dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+
+  /* ✅ 平滑过渡 */
+  /* html {
+    transition: background-color 0.3s, color 0.3s;
+  } */
+  /* ✅ 添加过渡效果 */
+  * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+  }
+}
+
+/* 工具类 */
+@layer utilities {
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
+
+  .text-ellipsis {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  }
+}
