@@ -96,7 +96,18 @@ export default defineNuxtConfig({
     },
     // 优化依赖预构建
     optimizeDeps: {
-      include: ["element-plus", "@element-plus/icons-vue"],
+      include: [
+        'element-plus',
+        '@element-plus/icons-vue',
+        'dayjs',
+        'dayjs/plugin/customParseFormat',
+        'dayjs/plugin/advancedFormat',
+        'dayjs/plugin/weekOfYear',
+        'dayjs/plugin/weekYear',
+        'dayjs/plugin/dayOfYear',
+        'dayjs/plugin/isSameOrAfter',
+        'dayjs/plugin/isSameOrBefore'
+      ]
     },
   },
   app: {
