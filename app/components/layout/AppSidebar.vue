@@ -73,11 +73,34 @@ function filterMenusByVisible<T extends { visible?: boolean; children?: T[] }>(i
     }))
 }
 
-/** 展示的菜单：接口返回或默认配置，并按 visible 过滤 */
+/** 拼接为完整 path，避免双斜杠 */
+function joinPath(parentPath: string, childPath: string): string {
+  const p = (parentPath || '').replace(/\/+$/, '')
+  const c = (childPath || '').replace(/^\/+/, '')
+  return p ? `${p}/${c}` : `/${c}` || '/'
+}
+
+/** 多级菜单 path 规范化：子级 path 处理成完整路径，如 system 下的 user -> /system/user */
+function normalizeMenuPaths<T extends { path?: string; children?: T[] }>(
+  items: T[],
+  parentPath = ''
+): T[] {
+  if (!items?.length) return []
+  return items.map((item) => {
+    const fullPath = parentPath ? joinPath(parentPath, item.path ?? '') : (item.path ?? '').replace(/^\/+/, '/') || '/'
+    const children = item.children?.length
+      ? normalizeMenuPaths(item.children, fullPath)
+      : []
+    return { ...item, path: fullPath, children }
+  })
+}
+
+/** 展示的菜单：接口返回或默认配置，按 visible 过滤，并规范化多级 path */
 const displayMenus = computed(() => {
   const list = userStore.menus
   const raw = list?.length ? list : defaultMenus
-  return filterMenusByVisible(raw)
+  const filtered = filterMenusByVisible(raw)
+  return normalizeMenuPaths(filtered)
 })
 
 const iconMap: Record<string, any> = {
