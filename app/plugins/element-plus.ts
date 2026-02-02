@@ -10,7 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   // 2. 安全地获取 locale
   // 在 Nuxt 中，@nuxtjs/i18n 会将实例注入到 $i18n
   const { $i18n } = nuxtApp
-  
+
   // 使用 computed 监听语言变化
   const elementLocale = computed(() => {
     // 兼容性写法：优先取 $i18n.locale

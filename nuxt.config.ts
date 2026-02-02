@@ -13,7 +13,8 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@element-plus/nuxt", // Element Plus
     "@nuxtjs/tailwindcss", // 添加 TailwindCSS 模块
-    "@pinia/nuxt", //添加 Pinia
+    "@pinia/nuxt", // Pinia（需在 persistedstate 之前）
+    "pinia-plugin-persistedstate/nuxt", // Pinia 持久化
     "@nuxtjs/i18n",
   ],
   // 添加 CSS
@@ -56,6 +57,15 @@ export default defineNuxtConfig({
       useCookie: true,
       cookieKey: "i18n_locale",
       redirectOn: "root",
+    },
+  },
+  // 运行时配置（可在 .env 中覆盖）
+  runtimeConfig: {
+    public: {
+      // 前端可访问的 API 基础地址
+      apiBase: import.meta.env.NUXT_PUBLIC_API_BASE || "https://api-test.xxxx.mx",
+      /** 是否启用租户模式，为 'true' 时请求头会携带 tenant-id */
+      tenantEnable: import.meta.env.NUXT_PUBLIC_TENANT_ENABLE || "true",
     },
   },
   // 路由规则
@@ -114,6 +124,7 @@ export default defineNuxtConfig({
     head: {
       script: [
         {
+          // 设置主题类
           innerHTML: `
             (function() {
               try {

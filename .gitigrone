@@ -20,6 +20,5 @@ logs
 
 # Local env files
 .env
-.env.production
-.env.staging
-.env.development
+.env.*
+!.env.example
