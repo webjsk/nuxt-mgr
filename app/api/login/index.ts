@@ -2,6 +2,7 @@ import { http } from "@/utils/http";
 import type { LoginParams } from "@/types/user";
 import type { LoginResult } from "@/types/user";
 import type { GetCodeParams, GetCodeResult, ReqCheckParams, ReqCheckResult } from "./type";
+import type { GetPermissionInfoResult } from "@/api/user/type";
 
 /** 提交登录（需先通过图形验证，传入 captcha 字段） */
 export const SubmitLogin = (data: LoginParams) => {
@@ -31,6 +32,18 @@ export const GetInfo = () => {
   return http.get<any>("/system/auth/get-permission-info");
 };
 
+/**
+ * ✅ 获取用户权限信息（SSR + CSR，使用 useFetch）
+ */
+export const useGetInfo = () => {
+  return useApiData<GetPermissionInfoResult>('/system/auth/get-permission-info', {
+    method: 'GET',
+    // ✅ SSR 配置
+    server: true,  // 服务端执行
+    lazy: false,   // 立即执行
+    immediate: true, // 立即执行
+  })
+}
 /** 退出登录 */
 export const Logout = () => {
   return http.post("/system/auth/logout");

@@ -153,6 +153,7 @@
           <el-alert type="info" :closable="false" class="mt-4">
             <template #title>
               <div class="text-sm">
+                <button @click="onTestSetToken">测试设置token</button>
                 <p class="font-semibold mb-1">测试账号：</p>
                 <p>管理员：admin / 123456</p>
                 <p>普通用户：user / 123456</p>
@@ -248,6 +249,7 @@ const onCaptchaSuccess = async (payload: { captchaVerification: string }) => {
     });
     userStore.setLoginResult(result, loginForm.rememberMe, tenantId);
     await userStore.getUserInfo(); // 拉取用户信息，供首页/布局展示
+    console.log(userStore,'userStore======');
     ElMessage.success(t("login.successTip"));
     showCaptchaDialog.value = false;
     const redirect = (route.query.redirect as string) || "/";
@@ -264,6 +266,15 @@ const onCaptchaDialogClosed = () => {
   captchaWrapRef.value = null;
   fetchCaptcha(); // 弹窗关闭后预拉取下一次验证码
 };
+
+const onTestSetToken = () => {
+  userStore.accessToken = '123456';
+  userStore.refreshToken = '123456';
+  userStore.tenantId = 1;
+  userStore.menus = [{ path: '/', name: 'home', component: 'Home' }];
+  userStore.userInfo = { username: 'admin', password: '123456' };
+  console.log(userStore,'userStore======');
+}
 
 onMounted(() => {
   if (userStore.isLoggedIn) {

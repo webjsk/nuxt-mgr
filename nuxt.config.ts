@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     "@element-plus/nuxt", // Element Plus
     "@nuxtjs/tailwindcss", // 添加 TailwindCSS 模块
     "@pinia/nuxt", // Pinia（需在 persistedstate 之前）
-    "pinia-plugin-persistedstate/nuxt", // Pinia 持久化
+    "@pinia-plugin-persistedstate/nuxt", // Pinia 持久化
     "@nuxtjs/i18n",
   ],
   // 添加 CSS
@@ -59,11 +59,20 @@ export default defineNuxtConfig({
       redirectOn: "root",
     },
   },
+  // ✅ Pinia 持久化配置
+  piniaPluginPersistedstate: {
+    storage: "localStorage",
+    cookieOptions: {
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24 * 7, // 7 天
+    },
+  },
   // 运行时配置（可在 .env 中覆盖）
   runtimeConfig: {
     public: {
       // 前端可访问的 API 基础地址
-      apiBase: import.meta.env.NUXT_PUBLIC_API_BASE || "https://api-test.xxxx.mx",
+      apiBase:
+        import.meta.env.NUXT_PUBLIC_API_BASE || "https://api-test.xxxx.mx",
       /** 是否启用租户模式，为 'true' 时请求头会携带 tenant-id */
       tenantEnable: import.meta.env.NUXT_PUBLIC_TENANT_ENABLE || "true",
     },
@@ -107,17 +116,17 @@ export default defineNuxtConfig({
     // 优化依赖预构建
     optimizeDeps: {
       include: [
-        'element-plus',
-        '@element-plus/icons-vue',
-        'dayjs',
-        'dayjs/plugin/customParseFormat',
-        'dayjs/plugin/advancedFormat',
-        'dayjs/plugin/weekOfYear',
-        'dayjs/plugin/weekYear',
-        'dayjs/plugin/dayOfYear',
-        'dayjs/plugin/isSameOrAfter',
-        'dayjs/plugin/isSameOrBefore'
-      ]
+        "element-plus",
+        "@element-plus/icons-vue",
+        "dayjs",
+        "dayjs/plugin/customParseFormat",
+        "dayjs/plugin/advancedFormat",
+        "dayjs/plugin/weekOfYear",
+        "dayjs/plugin/weekYear",
+        "dayjs/plugin/dayOfYear",
+        "dayjs/plugin/isSameOrAfter",
+        "dayjs/plugin/isSameOrBefore",
+      ],
     },
   },
   app: {
@@ -144,10 +153,10 @@ export default defineNuxtConfig({
               } catch (e) {}
             })();
           `,
-          type: 'text/javascript',
-          tagPosition: 'head',
-        }
-      ]
-    }
-  }
+          type: "text/javascript",
+          tagPosition: "head",
+        },
+      ],
+    },
+  },
 });

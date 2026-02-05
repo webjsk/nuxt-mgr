@@ -1,104 +1,210 @@
-<!-- pages/system/menu.vue -->
 <template>
-    <div class="p-6">
-      <div class="card p-6">
-        <h2 class="text-xl font-bold mb-4">菜单管理</h2>
-        
-        <div class="mb-4">
-          <el-button type="primary" :icon="Plus">新增菜单</el-button>
-          <el-button :icon="Refresh">刷新</el-button>
-        </div>
-  
-        <el-table
-          :data="tableData"
-          row-key="id"
-          default-expand-all
-          :tree-props="{ children: 'children' }"
+  <!-- 搜索工作栏 -->
+  <ContentWrap>
+    <el-form
+      ref="queryFormRef"
+      :inline="true"
+      :model="queryParams"
+      class="-mb-15px"
+      label-width="68px"
+    >
+      <el-form-item label="菜单名称" prop="name">
+        <el-input
+          v-model="queryParams.name"
+          class="!w-240px"
+          clearable
+          placeholder="请输入菜单名称"
+          @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="状态" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          class="!w-240px"
+          clearable
+          placeholder="请选择菜单状态"
         >
-          <el-table-column prop="title" label="菜单名称" width="200" />
-          <el-table-column prop="icon" label="图标" width="80">
-            <template #default="{ row }">
-              <el-icon v-if="row.icon"><component :is="row.icon" /></el-icon>
-            </template>
-          </el-table-column>
-          <el-table-column prop="path" label="路由路径" />
-          <el-table-column prop="component" label="组件路径" />
-          <el-table-column prop="sort" label="排序" width="80" />
-          <el-table-column label="状态" width="80">
-            <template #default="{ row }">
-              <el-tag :type="row.isHidden ? 'info' : 'success'">
-                {{ row.isHidden ? '隐藏' : '显示' }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="200" fixed="right">
-            <template #default>
-              <el-button link type="primary" :icon="Plus">新增</el-button>
-              <el-button link type="primary" :icon="Edit">编辑</el-button>
-              <el-button link type="danger" :icon="Delete">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-    </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { Plus, Edit, Delete, Refresh } from '@element-plus/icons-vue'
-  
-  definePageMeta({
-    title: '菜单管理',
+          <el-option
+            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="handleQuery" type="primary">
+          <!-- <Icon class="mr-5px" icon="ep:search" /> -->
+          搜索
+        </el-button>
+        <!--        <el-button @click="resetQuery">-->
+        <!--          <Icon class="mr-5px" icon="ep:refresh" />-->
+        <!--          重置-->
+        <!--        </el-button>-->
+        <el-button
+          v-hasPermi="['system:menu:create']"
+          plain
+          type="primary"
+          @click="openForm('create')"
+        >
+          <!-- <Icon class="mr-5px" icon="ep:plus" /> -->
+          新增
+        </el-button>
+        <el-button plain type="danger" @click="toggleExpandAll">
+          <!-- <Icon class="mr-5px" icon="ep:sort" /> -->
+          展开/折叠
+        </el-button>
+        <el-button plain @click="refreshMenu" type="success">
+          <!-- <Icon class="mr-5px" icon="ep:refresh" /> -->
+          刷新菜单缓存
+        </el-button>
+      </el-form-item>
+    </el-form>
+  </ContentWrap>
+
+  <!-- 列表 -->
+  <ContentWrap class="mt-4">
+    <el-table
+      v-if="refreshTable"
+      v-loading="loading"
+      :data="list"
+      :default-expand-all="isExpandAll"
+      row-key="id"
+    >
+      <el-table-column :show-overflow-tooltip="true" label="菜单名称" prop="name" width="250" />
+      <el-table-column align="center" label="图标" prop="icon" width="100">
+        <template #default="scope">
+          <!-- <Icon :icon="scope.row.icon" /> -->
+        </template>
+      </el-table-column>
+      <el-table-column label="排序" prop="sort" width="60" />
+      <el-table-column :show-overflow-tooltip="true" label="权限标识" prop="permission" />
+      <el-table-column :show-overflow-tooltip="true" label="组件路径" prop="component" />
+      <el-table-column :show-overflow-tooltip="true" label="组件名称" prop="componentName" />
+      <el-table-column label="状态" prop="status" width="80">
+        <template #default="scope">
+          <dict-tag :type="DICT_TYPE.COMMON_STATUS" :value="scope.row.status" />
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="操作">
+        <template #default="scope">
+          <el-button
+            v-hasPermi="['system:menu:update']"
+            link
+            type="primary"
+            @click="openForm('update', scope.row.id)"
+          >
+            修改
+          </el-button>
+          <el-button
+            v-hasPermi="['system:menu:create']"
+            link
+            type="primary"
+            @click="openForm('create', undefined, scope.row.id)"
+          >
+            新增
+          </el-button>
+          <el-button
+            v-hasPermi="['system:menu:delete']"
+            link
+            type="danger"
+            @click="handleDelete(scope.row.id)"
+          >
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </ContentWrap>
+
+  <!-- 表单弹窗：添加/修改 -->
+  <MenuForm ref="formRef" @success="getList" />
+</template>
+<script lang="ts" setup>
+import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
+import { handleTree } from '@/utils/tree'
+import { GetMenuList, DeleteMenu } from '@/api/system/menu'
+import MenuForm from './MenuForm.vue'
+import { useUserStore } from '@/stores/user'
+
+defineOptions({ name: 'SystemMenu' })
+const userStore = useUserStore()
+const { t } = useI18n() // 国际化
+const message = useMessage() // 消息弹窗
+
+const loading = ref(true) // 列表的加载中
+const list = ref<any>([]) // 列表的数据
+const queryParams = reactive({
+  name: undefined,
+  status: undefined
+})
+const queryFormRef = ref() // 搜索的表单
+const isExpandAll = ref(false) // 是否展开，默认全部折叠
+const refreshTable = ref(true) // 重新渲染表格状态
+
+/** 查询列表 */
+const getList = async () => {
+  loading.value = true
+  try {
+    const data = await GetMenuList(queryParams)
+    list.value = handleTree(data)
+  } finally {
+    loading.value = false
+  }
+}
+
+/** 搜索按钮操作 */
+const handleQuery = () => {
+  getList()
+}
+
+/** 重置按钮操作 */
+const resetQuery = () => {
+  queryFormRef.value.resetFields()
+  handleQuery()
+}
+
+/** 添加/修改操作 */
+const formRef = ref()
+const openForm = (type: string, id?: number, parentId?: number) => {
+  formRef.value.open(type, id, parentId)
+}
+
+/** 展开/折叠操作 */
+const toggleExpandAll = () => {
+  refreshTable.value = false
+  isExpandAll.value = !isExpandAll.value
+  nextTick(() => {
+    refreshTable.value = true
   })
-  
-  const route = useRoute()
-  const appStore = useAppStore()
-  
-  onMounted(() => {
-    appStore.addTab({
-      path: route.path,
-      title: '菜单管理',
-      name: route.name as string,
-    })
-  })
-  
-  const tableData = ref([
-    {
-      id: 1,
-      title: '系统管理',
-      icon: 'Setting',
-      path: '/system',
-      component: 'Layout',
-      sort: 1,
-      isHidden: false,
-      children: [
-        {
-          id: 11,
-          title: '用户管理',
-          icon: 'User',
-          path: '/system/user',
-          component: 'system/user',
-          sort: 1,
-          isHidden: false,
-        },
-        {
-          id: 12,
-          title: '角色管理',
-          icon: 'UserFilled',
-          path: '/system/role',
-          component: 'system/role',
-          sort: 2,
-          isHidden: false,
-        },
-        {
-          id: 13,
-          title: '菜单管理',
-          icon: 'Menu',
-          path: '/system/menu',
-          component: 'system/menu',
-          sort: 3,
-          isHidden: false,
-        },
-      ],
-    },
-  ])
-  </script>
+}
+
+/** 刷新菜单缓存按钮操作：从服务端拉取最新菜单并更新 Pinia 持久化状态，然后刷新页面 */
+const refreshMenu = async () => {
+  try {
+    await message.confirm('即将更新缓存刷新浏览器！', '刷新菜单缓存')
+    await userStore.getUserInfo()
+    if (import.meta.client) {
+      location.reload()
+    }
+  } catch {}
+}
+
+/** 删除按钮操作 */
+const handleDelete = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm()
+    // 发起删除
+    await DeleteMenu(id)
+    message.success(t('common.delSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+/** 初始化 **/
+onMounted(() => {
+  getList()
+})
+</script>

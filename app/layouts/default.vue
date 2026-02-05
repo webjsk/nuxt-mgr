@@ -26,7 +26,6 @@
 
   onMounted(() => {
     appStore.checkDevice()
-    userStore.init() // 从持久化恢复 token 并拉取用户信息
     window.addEventListener('resize', appStore.checkDevice)
   })
   
