@@ -1,14 +1,5 @@
-import type { ElementPlusInfoType } from '@/types/elementPlus'
 import { useDictStore } from '@/stores/dict'
-
-/** 与 stores/dict 中 DictDataType 保持一致，供组件使用 */
-export interface DictDataType {
-  dictType: string
-  label: string
-  value: string | number | boolean
-  colorType: ElementPlusInfoType | ''
-  cssClass: string
-}
+import type { DictDataType } from '@/stores/dict'
 
 export interface NumberDictDataType extends DictDataType {
   value: number
@@ -22,6 +13,7 @@ export interface NumberDictDataType extends DictDataType {
 export const getDictOptions = (dictType: string): DictDataType[] => {
   return useDictStore().getDictByType(dictType) || []
 }
+// 获取数字类型的字典选项
 export const getIntDictOptions = (dictType: string): NumberDictDataType[] => {
     // 获得通用的 DictDataType 列表
     const dictOptions: DictDataType[] = getDictOptions(dictType)

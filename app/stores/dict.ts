@@ -14,8 +14,8 @@ const COMMON_STATUS = 'common_status'
 export const useDictStore = defineStore('dict', () => {
   const dictMap = ref<Record<string, DictDataType[]>>({
     [COMMON_STATUS]: [
-      { dictType: COMMON_STATUS, label: '关闭', value: 0, colorType: 'info', cssClass: '' },
-      { dictType: COMMON_STATUS, label: '开启', value: 1, colorType: 'success', cssClass: '' },
+      { dictType: COMMON_STATUS, label: '关闭', value: 1, colorType: 'info', cssClass: '' },
+      { dictType: COMMON_STATUS, label: '开启', value: 0, colorType: 'primary', cssClass: '' },
     ],
   })
 

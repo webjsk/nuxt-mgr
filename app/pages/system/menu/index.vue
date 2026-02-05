@@ -11,7 +11,7 @@
       <el-form-item label="菜单名称" prop="name">
         <el-input
           v-model="queryParams.name"
-          class="!w-240px"
+          class=""
           clearable
           placeholder="请输入菜单名称"
           @keyup.enter="handleQuery"
@@ -20,7 +20,7 @@
       <el-form-item label="状态" prop="status">
         <el-select
           v-model="queryParams.status"
-          class="!w-240px"
+          class=""
           clearable
           placeholder="请选择菜单状态"
         >

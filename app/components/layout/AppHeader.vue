@@ -15,16 +15,16 @@
 
     <!-- 右侧 -->
     <div class="flex items-center gap-3">
-      <el-tooltip
+      <!-- <el-tooltip
         :content="appStore.isFullscreen ? '退出全屏' : '全屏'"
         placement="bottom"
       >
-        <!-- <el-button
+        <el-button
           :icon="appStore.isFullscreen ? FullScreenExit : FullScreen"
           circle
           @click="appStore.toggleFullscreen"
-        /> -->
-      </el-tooltip>
+        />
+      </el-tooltip> -->
 
       <CommonLanguageToggle />
       <CommonThemeToggle />
