@@ -35,7 +35,7 @@
    * Verify 验证码组件
    * @description 分发验证码使用
    * */
-  import { VerifySlide } from './Verify'
+  import VerifySlide from './VerifySlide.vue'
   import { computed, ref, toRefs, watchEffect } from 'vue'
   
   export default {

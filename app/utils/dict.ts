@@ -30,5 +30,6 @@ export const getIntDictOptions = (dictType: string): NumberDictDataType[] => {
 }
 
 export enum DICT_TYPE {
-    COMMON_STATUS = 'common_status',
+  COMMON_STATUS = 'common_status',
+  SYSTEM_MENU_TYPE = 'system_menu_type',
 }  

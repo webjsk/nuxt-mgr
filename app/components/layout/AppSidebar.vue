@@ -22,13 +22,17 @@
         @select="handleMenuSelect"
       >
         <el-menu-item index="/">
-          <el-icon><HomeFilled /></el-icon>
+          <Icon icon="ep:home-filled" class="el-icon mr-1" />
           <template #title>{{ $t('menu.dashboard') }}</template>
         </el-menu-item>
         <template v-for="item in displayMenus" :key="item.id">
           <el-sub-menu v-if="item.children?.length" :index="item.path">
             <template #title>
-              <el-icon><component :is="resolveIcon(item.icon)" /></el-icon>
+              <Icon
+                v-if="item.icon"
+                :icon="item.icon"
+                class="el-icon mr-1"
+              />
               <span>{{ resolveMenuName(item.name) }}</span>
             </template>
             <el-menu-item
@@ -36,12 +40,20 @@
               :key="child.id"
               :index="child.path"
             >
-              <el-icon><component :is="resolveIcon(child.icon)" /></el-icon>
+              <Icon
+                v-if="child.icon"
+                :icon="child.icon"
+                class="el-icon mr-1"
+              />
               <template #title>{{ resolveMenuName(child.name) }}</template>
             </el-menu-item>
           </el-sub-menu>
           <el-menu-item v-else :index="item.path">
-            <el-icon><component :is="resolveIcon(item.icon)" /></el-icon>
+            <Icon
+              v-if="item.icon"
+              :icon="item.icon"
+              class="el-icon mr-1"
+            />
             <template #title>{{ resolveMenuName(item.name) }}</template>
           </el-menu-item>
         </template>
@@ -51,7 +63,6 @@
 </template>
 
 <script setup lang="ts">
-import { HomeFilled, Setting, User, UserFilled, Menu } from '@element-plus/icons-vue'
 import { defaultMenus } from '@/constants/menu'
 
 const appStore = useAppStore()
@@ -102,18 +113,6 @@ const displayMenus = computed(() => {
   const filtered = filterMenusByVisible(raw)
   return normalizeMenuPaths(filtered)
 })
-
-const iconMap: Record<string, any> = {
-  Setting,
-  User,
-  UserFilled,
-  Menu,
-  HomeFilled,
-}
-
-function resolveIcon(iconName: string) {
-  return iconMap[iconName] ?? Setting
-}
 
 /** 菜单名：若为 i18n key（如 menu.xxx）则翻译，否则原样 */
 function resolveMenuName(name: string) {

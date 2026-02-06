@@ -1,3 +1,11 @@
+/** 树节点（用于 el-tree-select 等） */
+export interface Tree {
+  id: number
+  name: string
+  children?: Tree[]
+  [key: string]: any
+}
+
 /**
  * 构造树型结构数据
  * @param {*} data 数据源

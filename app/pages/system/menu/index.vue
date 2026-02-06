@@ -74,7 +74,11 @@
       <el-table-column :show-overflow-tooltip="true" label="菜单名称" prop="name" width="250" />
       <el-table-column align="center" label="图标" prop="icon" width="100">
         <template #default="scope">
-          <!-- <Icon :icon="scope.row.icon" /> -->
+          <Icon
+            v-if="scope.row.icon"
+            :icon="scope.row.icon"
+            :size="20"
+          />
         </template>
       </el-table-column>
       <el-table-column label="排序" prop="sort" width="60" />

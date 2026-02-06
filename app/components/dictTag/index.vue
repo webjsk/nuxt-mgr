@@ -20,12 +20,10 @@
   // 当前字典类型下的所有选项
   const options = computed<DictDataType[]>(() => getDictOptions(props.type))
   
-  console.log(options.value,'options======');
   // 当前 value 对应的字典项
   const currentItem = computed<DictDataType | undefined>(() =>
     options.value.find((item) => item.value == props.value)
   )
-  console.log(currentItem.value,'currentItem======');
   // 展示文本：优先字典 label，找不到则回退为原始 value
   const label = computed(() =>
     currentItem.value ? currentItem.value.label : props.value != null ? String(props.value) : ''

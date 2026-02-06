@@ -24,7 +24,14 @@
     "success": "成功",
     "error": "错误",
     "warning": "警告",
-    "info": "信息"
+    "info": "信息",
+    "createSuccess": "新增成功",
+    "updateSuccess": "修改成功",
+    "delSuccess": "删除成功"
+  },
+  "action": {
+    "create": "新增",
+    "update": "修改"
   },
   "theme": {
     "light": "浅色模式",

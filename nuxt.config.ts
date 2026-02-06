@@ -7,9 +7,35 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
   devtools: { enabled: true },
-  // 模块配置
+  // 组件自动导入（注意：组件实际放在 app/components 下）
+  // - app/components/Icon/*.vue     -> 直接注册为 Icon / IconSelect（无前缀）
+  // - app/components/layout/*.vue  -> LayoutAppHeader、LayoutAppSidebar 等
+  // - app/components/common/*.vue  -> CommonThemeToggle、CommonLanguageToggle 等
+  // components: [
+  //   // 1. 先配置需要“特殊处理”的深度路径，并将 pathPrefix 设为 false
+  //   { 
+  //     path: '~/app/components/Icon', 
+  //     extensions: ['.vue'],
+  //     pathPrefix: false 
+  //   },
+    
+  //   // 2. 再配置通用的组件目录，明确指定 pathPrefix
+  //   { 
+  //     path: '~/app/components/layout', 
+  //     pathPrefix: true 
+  //   },
+  //   { 
+  //     path: '~/app/components/common', 
+  //     pathPrefix: true 
+  //   },
+
+  //   // 3. 最后，如果你还有直接在 components 根目录下的组件，需要补充这一行
+  //   // 否则全局扫描可能会被上面精确的路径配置所干扰
+  //   '~/app/components',
+  // ],
+  // 模块配置 
   modules: [
-    "@nuxt/icon",
+    "@nuxt/icon",           // 使用 Iconify 渲染 Font Awesome 等多图标集
     "@nuxt/image",
     "@element-plus/nuxt", // Element Plus
     "@nuxtjs/tailwindcss", // 添加 TailwindCSS 模块
@@ -17,8 +43,11 @@ export default defineNuxtConfig({
     "@pinia-plugin-persistedstate/nuxt", // Pinia 持久化
     "@nuxtjs/i18n",
   ],
-  // 添加 CSS
-  css: ["~/assets/css/tailwind.css", "~/assets/css/main.css"],
+  // 添加全局 CSS
+  css: [
+    "~/assets/css/tailwind.css",
+    "~/assets/css/main.css",
+  ],
   // TailwindCSS 配置
   tailwindcss: {
     cssPath: "~/assets/css/tailwind.css",
@@ -129,6 +158,11 @@ export default defineNuxtConfig({
       ],
     },
   },
+  // @nuxt/icon 配置：避免与自定义 Icon 组件冲突，改用 <NuxtIcon>
+  icon: {
+    componentName: "NuxtIcon",
+  },
+
   app: {
     head: {
       script: [
