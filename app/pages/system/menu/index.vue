@@ -3,62 +3,71 @@
   <ContentWrap>
     <el-form
       ref="queryFormRef"
-      :inline="true"
       :model="queryParams"
-      class="-mb-15px"
-      label-width="68px"
+      class="menu-query-form -mb-15px"
+      label-width="80px"
     >
-      <el-form-item label="菜单名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          class=""
-          clearable
-          placeholder="请输入菜单名称"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          class=""
-          clearable
-          placeholder="请选择菜单状态"
-        >
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button @click="handleQuery" type="primary">
-          <!-- <Icon class="mr-5px" icon="ep:search" /> -->
-          搜索
-        </el-button>
-        <!--        <el-button @click="resetQuery">-->
-        <!--          <Icon class="mr-5px" icon="ep:refresh" />-->
-        <!--          重置-->
-        <!--        </el-button>-->
-        <el-button
-          v-hasPermi="['system:menu:create']"
-          plain
-          type="primary"
-          @click="openForm('create')"
-        >
-          <!-- <Icon class="mr-5px" icon="ep:plus" /> -->
-          新增
-        </el-button>
-        <el-button plain type="danger" @click="toggleExpandAll">
-          <!-- <Icon class="mr-5px" icon="ep:sort" /> -->
-          展开/折叠
-        </el-button>
-        <el-button plain @click="refreshMenu" type="success">
-          <!-- <Icon class="mr-5px" icon="ep:refresh" /> -->
-          刷新菜单缓存
-        </el-button>
-      </el-form-item>
+      <el-row :gutter="16" align="middle">
+        <!-- 菜单名称 -->
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="菜单名称" prop="name">
+            <el-input
+              v-model="queryParams.name"
+              clearable
+              placeholder="请输入菜单名称"
+              @keyup.enter="handleQuery"
+            />
+          </el-form-item>
+        </el-col>
+
+        <!-- 状态 -->
+        <el-col :xs="24" :sm="12" :md="8">
+          <el-form-item label="状态" prop="status">
+            <el-select
+              v-model="queryParams.status"
+              clearable
+              placeholder="请选择菜单状态"
+            >
+              <el-option
+                v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+
+        <!-- 按钮区域，靠右 -->
+        <el-col :xs="24" :sm="24" :md="8">
+          <el-form-item>
+            <div class="flex justify-end items-center gap-2 w-full h-full">
+              <el-button @click="handleQuery" type="primary">
+                搜索
+              </el-button>
+              <!--
+              <el-button @click="resetQuery">
+                重置
+              </el-button>
+              -->
+              <el-button
+                v-hasPermi="['system:menu:create']"
+                plain
+                type="primary"
+                @click="openForm('create')"
+              >
+                新增
+              </el-button>
+              <el-button plain type="danger" @click="toggleExpandAll">
+                展开/折叠
+              </el-button>
+              <el-button plain @click="refreshMenu" type="success">
+                刷新菜单缓存
+              </el-button>
+            </div>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
   </ContentWrap>
 
@@ -212,3 +221,15 @@ onMounted(() => {
   getList()
 })
 </script>
+
+<style scoped>
+/* 仅作用于本页查询区域：去掉 el-form-item 默认的底部间距 */
+.menu-query-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+/* 栅格内列在换行时的垂直间距（解决自适应换行时两行紧贴的问题） */
+.menu-query-form :deep(.el-row) {
+  row-gap: 12px;
+}
+</style>

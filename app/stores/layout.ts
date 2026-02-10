@@ -48,19 +48,23 @@ export const useAppStore = defineStore('app', () => {
     path: string
     title: string
     name: string
+    icon?: string
   }
 
   const tabs = ref<Tab[]>([
-    { path: '/', title: '首页', name: 'index' }
+    { path: '/', title: '首页', name: 'index', icon: 'ep:home-filled' }
   ])
 
   const activeTab = ref('/')
 
-  // 添加标签页
+  // 添加标签页（若已存在则更新 title/icon，保证从菜单解析到的图标能补全）
   const addTab = (tab: Tab) => {
     const exists = tabs.value.find(t => t.path === tab.path)
     if (!exists) {
       tabs.value.push(tab)
+    } else {
+      exists.title = tab.title
+      if (tab.icon !== undefined) exists.icon = tab.icon
     }
     activeTab.value = tab.path
   }
@@ -87,7 +91,7 @@ export const useAppStore = defineStore('app', () => {
 
   // 关闭所有标签页
   const closeAllTabs = () => {
-    tabs.value = [{ path: '/', title: '首页', name: 'index' }]
+    tabs.value = [{ path: '/', title: '首页', name: 'index', icon: 'ep:home-filled' }]
     activeTab.value = '/'
     navigateTo('/')
   }

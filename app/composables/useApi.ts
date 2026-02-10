@@ -31,11 +31,11 @@ export const useApiData = <T = any>(
   url: string | (() => string),
   options: UseFetchOptions<ApiResponse<T>> & CustomOptions = {}
 ) => {
-  return useFetch<ApiResponse<T>, any, any, any, T>(url, {
+  return useFetch<ApiResponse<T>, string, string, never, T>(url, {
     ...options,
     $fetch: $api,
-    transform: (res) => res.data as T,
-  })
+    transform: (res: ApiResponse<T>) => res.data as T,
+  } as any)
 }
 
 /**
@@ -58,9 +58,9 @@ export const useLazyApiData = <T = any>(
   url: string | (() => string),
   options: UseFetchOptions<ApiResponse<T>> & CustomOptions = {}
 ) => {
-  return useLazyFetch<ApiResponse<T>, any, any, any, T>(url, {
+  return useLazyFetch<ApiResponse<T>, string, string, never, T>(url, {
     ...options,
     $fetch: $api,
-    transform: (res) => res.data as T,
-  })
+    transform: (res: ApiResponse<T>) => res.data as T,
+  } as any)
 }

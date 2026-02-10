@@ -1,80 +1,70 @@
-<!-- components/layout/AppSidebar.vue -->
 <template>
   <aside
-    class="app-sidebar bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 overflow-hidden flex flex-col"
+    class="app-sidebar transition-all duration-300 overflow-hidden flex flex-col"
     :class="[
       appStore.sidebarCollapsed ? 'w-16' : 'w-64',
       appStore.isMobile && !appStore.sidebarCollapsed ? 'fixed left-0 top-0 bottom-0 z-[999]' : ''
     ]"
+    style="background-color: #0f172a; border-right: 1px solid #1f2937;"
   >
-    <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700 cursor-pointer" @click="handleLogoClick">
-      <div v-if="!appStore.sidebarCollapsed" class="flex items-center gap-2">
-        <span class="text-lg font-bold text-gray-900 dark:text-white">Admin System</span>
-      </div>
+    <div
+      class="h-16 flex items-center border-b border-white/10 cursor-pointer px-3"
+      @click="handleLogoClick"
+    >
+      <img src="~/assets/imgs/login/logo.png" alt="Logo" class="h-9 w-auto flex-shrink-0" />
+      <Transition name="sidebar-logo">
+        <span v-if="!appStore.sidebarCollapsed" class="ml-3 text-xl font-bold tracking-wide text-white">
+          MGR
+        </span>
+      </Transition>
     </div>
 
     <el-scrollbar class="flex-1">
-      <el-menu
-        :default-active="activeMenu"
-        :collapse="appStore.sidebarCollapsed"
-        :collapse-transition="false"
-        class="border-none"
-        @select="handleMenuSelect"
-      >
-        <el-menu-item index="/">
-          <Icon icon="ep:home-filled" class="el-icon mr-1" />
-          <template #title>{{ $t('menu.dashboard') }}</template>
-        </el-menu-item>
-        <template v-for="item in displayMenus" :key="item.id">
-          <el-sub-menu v-if="item.children?.length" :index="item.path">
+      <ClientOnly>
+        <el-menu
+          :key="'sidebar-' + appStore.sidebarCollapsed"
+          :default-active="activeMenu"
+          :collapse="appStore.sidebarCollapsed"
+          :collapse-transition="true"
+          active-text-color="#3b82f6"
+          background-color="#111827"
+          text-color="#e5e7eb"
+          class="el-menu-vertical-demo border-none"
+          @select="handleMenuSelect"
+        >
+          <el-menu-item index="/">
+            <Icon icon="ep:home-filled" class="el-icon mr-1" />
             <template #title>
-              <Icon
-                v-if="item.icon"
-                :icon="item.icon"
-                class="el-icon mr-1"
-              />
-              <span>{{ resolveMenuName(item.name) }}</span>
+              <span class="menu-title-text">{{ dashboardTitle }}</span>
             </template>
-            <el-menu-item
-              v-for="child in item.children"
-              :key="child.id"
-              :index="child.path"
-            >
-              <Icon
-                v-if="child.icon"
-                :icon="child.icon"
-                class="el-icon mr-1"
-              />
-              <template #title>{{ resolveMenuName(child.name) }}</template>
-            </el-menu-item>
-          </el-sub-menu>
-          <el-menu-item v-else :index="item.path">
-            <Icon
-              v-if="item.icon"
-              :icon="item.icon"
-              class="el-icon mr-1"
-            />
-            <template #title>{{ resolveMenuName(item.name) }}</template>
           </el-menu-item>
+
+          <LayoutAppSidebarMenu
+            :items="displayMenus"
+            :resolve-menu-name="resolveMenuName"
+          />
+        </el-menu>
+
+        <template #placeholder>
+          <div class="w-full h-full bg-[#111827]" />
         </template>
-      </el-menu>
+      </ClientOnly>
     </el-scrollbar>
   </aside>
 </template>
 
 <script setup lang="ts">
-import { defaultMenus } from '@/constants/menu'
-
 const appStore = useAppStore()
 const userStore = useUserStore()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 
+const dashboardTitle = computed(() => t('menu.home'))
 const activeMenu = computed(() => route.path)
 
-/** 按 visible 过滤菜单树（只展示 visible 为 true 的项） */
-function filterMenusByVisible<T extends { visible?: boolean; children?: T[] }>(items: T[]): T[] {
+/** 菜单处理逻辑保持不变 */
+function filterMenusByVisible(items: any[]): any[] {
   if (!items?.length) return []
   return items
     .filter((item) => item.visible !== false)
@@ -84,68 +74,63 @@ function filterMenusByVisible<T extends { visible?: boolean; children?: T[] }>(i
     }))
 }
 
-/** 拼接为完整 path，避免双斜杠 */
-function joinPath(parentPath: string, childPath: string): string {
-  const p = (parentPath || '').replace(/\/+$/, '')
-  const c = (childPath || '').replace(/^\/+/, '')
-  return p ? `${p}/${c}` : `/${c}` || '/'
+function joinPath(p1: string, p2: string) {
+  const p = p1.replace(/\/+$/, '')
+  const c = p2.replace(/^\/+/, '')
+  return p ? `${p}/${c}` : `/${c}`
 }
 
-/** 多级菜单 path 规范化：子级 path 处理成完整路径，如 system 下的 user -> /system/user */
-function normalizeMenuPaths<T extends { path?: string; children?: T[] }>(
-  items: T[],
-  parentPath = ''
-): T[] {
+function normalizeMenuPaths(items: any[], parentPath = ''): any[] {
   if (!items?.length) return []
   return items.map((item) => {
     const fullPath = parentPath ? joinPath(parentPath, item.path ?? '') : (item.path ?? '').replace(/^\/+/, '/') || '/'
-    const children = item.children?.length
-      ? normalizeMenuPaths(item.children, fullPath)
-      : []
-    return { ...item, path: fullPath, children }
+    return { 
+      ...item, 
+      path: fullPath, 
+      children: normalizeMenuPaths(item.children || [], fullPath) 
+    }
   })
 }
 
-/** 展示的菜单：接口返回或默认配置，按 visible 过滤，并规范化多级 path */
 const displayMenus = computed(() => {
-  const list = userStore.menus
-  const raw = list?.length ? list : defaultMenus
-  const filtered = filterMenusByVisible(raw)
-  return normalizeMenuPaths(filtered)
+  const raw = userStore.menus?.length ? userStore.menus : []
+  return normalizeMenuPaths(filterMenusByVisible(raw))
 })
 
-/** 菜单名：若为 i18n key（如 menu.xxx）则翻译，否则原样 */
-function resolveMenuName(name: string) {
-  if (!name) return ''
-  return name.startsWith('menu.') ? t(name) : name
-}
-
-const handleMenuSelect = (index: string) => {
-  router.push(index)
-}
-
-const handleLogoClick = () => {
-  router.push('/')
-}
+const resolveMenuName = (name: string) => (name?.startsWith('menu.') ? t(name) : name)
+const handleMenuSelect = (index: string) => router.push(index)
+const handleLogoClick = () => router.push('/')
 </script>
 
 <style scoped>
-/* 自定义菜单样式 */
-:deep(.el-menu) {
-  background-color: transparent;
+:deep(.el-menu) { border: none !important; }
+
+/* 收起状态的精准修正 */
+:deep(.el-menu--collapse) {
+  width: 100% !important;
 }
 
-:deep(.el-menu-item),
-:deep(.el-sub-menu__title) {
-  @apply text-gray-700 dark:text-gray-300;
+/* 关键：修复收起时图标不居中或消失的问题 */
+:deep(.el-menu--collapse .el-menu-item),
+:deep(.el-menu--collapse .el-sub-menu__title) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 0 !important;
 }
 
-:deep(.el-menu-item:hover),
-:deep(.el-sub-menu__title:hover) {
-  @apply bg-gray-100 dark:bg-gray-700;
+/* 隐藏收起时的文字内容 */
+:deep(.el-menu--collapse .menu-title-text),
+:deep(.el-menu--collapse .el-sub-menu__icon-arrow) {
+  display: none !important;
 }
 
-:deep(.el-menu-item.is-active) {
-  @apply bg-primary/10 text-primary;
+/* 强制显示图标 */
+:deep(.custom-common-icon) {
+  /* margin: 0 !important; */
+  font-size: 18px !important;
 }
+
+.sidebar-logo-enter-active { transition: all 0.2s ease; }
+.sidebar-logo-enter-from { opacity: 0; transform: translateX(-10px); }
 </style>

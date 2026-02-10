@@ -9,12 +9,14 @@ type ParameterCSSProperties = (item?: string) => CSSProperties | undefined
 const props = defineProps<{
   modelValue?: string
 }>()
-const emit = defineEmits<{ (e: 'update:modelValue', v: string) }>()
+const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>()
+
+type IconTabKey = keyof typeof IconJson
 
 const visible = ref(false)
 const iconList = ref(IconJson)
 const icon = ref('add-location')
-const currentActiveType = ref('ep:')
+const currentActiveType = ref<IconTabKey>('ep:')
 const copyIconList = JSON.parse(JSON.stringify(IconJson)) as typeof IconJson
 
 const pageSize = ref(96)
@@ -48,9 +50,10 @@ const iconItemStyle = computed((): ParameterCSSProperties => {
   }
 })
 
-function handleClick(pane: { props?: { name: string } }) {
+function handleClick(pane: { props?: { name?: string | number } }) {
   currentPage.value = 1
-  const name = pane?.props?.name ?? 'ep:'
+  const raw = pane?.props?.name
+  const name = (raw != null ? String(raw) : 'ep:') as keyof typeof IconJson
   currentActiveType.value = name
   const first = iconList.value[name]?.[0]
   if (first) {
@@ -74,7 +77,7 @@ watch(
   (val) => {
     if (val && val.includes(':')) {
       const idx = val.indexOf(':') + 1
-      currentActiveType.value = val.substring(0, idx)
+      currentActiveType.value = val.substring(0, idx) as IconTabKey
       icon.value = val.substring(idx)
     }
   },
@@ -89,7 +92,9 @@ watch(filterValue, () => {
   <div class="iconslt_box">
     <ElInput
       :model-value="modelValue"
-      @click="visible = !visible"
+      readonly
+      class="iconslt_input"
+      @click="visible = true"
       @update:model-value="emit('update:modelValue', $event)"
     >
       <template #append>
@@ -102,8 +107,8 @@ watch(filterValue, () => {
         >
           <template #reference>
             <div
-              class="h-32px w-40px flex cursor-pointer items-center justify-center"
-              @click="visible = !visible"
+              class="h-32px w-40px flex cursor-pointer items-center justify-center iconslt_trigger"
+              @click.stop
             >
               <Icon :icon="currentActiveType + icon" />
             </div>

@@ -22,13 +22,12 @@
   
   <script setup lang="ts">
   const appStore = useAppStore()
-  const userStore = useUserStore()
 
   onMounted(() => {
     appStore.checkDevice()
     window.addEventListener('resize', appStore.checkDevice)
   })
-  
+
   onUnmounted(() => {
     window.removeEventListener('resize', appStore.checkDevice)
   })

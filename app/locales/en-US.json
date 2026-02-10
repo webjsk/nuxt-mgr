@@ -55,6 +55,7 @@
   },
   "menu": {
     "dashboard": "Dashboard",
+    "home": "Home",
     "system": "System",
     "user": "User",
     "role": "Role",
