@@ -25,8 +25,8 @@ const filterValue = ref('')
 
 const tabsList = [
   { label: 'Element Plus', name: 'ep:' },
-  { label: 'Font Awesome 4', name: 'fa:' },
-  { label: 'Font Awesome 5 Solid', name: 'fa-solid:' },
+  { label: 'FA6 Solid', name: 'fa6-solid:' },
+  { label: 'FA6 Brands', name: 'fa6-brands:' },
 ]
 
 const pageList = computed(() => {

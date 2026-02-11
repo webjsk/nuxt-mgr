@@ -24,7 +24,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return navigateTo('/')
     }
     // 有 token 且访问非 /login：在 SSR 阶段补齐用户数据，利用 payload 机制保证客户端水合一致
-    await userStore.init()
+    // await userStore.init()
     return
   }
 

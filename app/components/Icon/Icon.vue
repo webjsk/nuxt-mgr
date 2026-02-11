@@ -15,26 +15,20 @@ const props = withDefaults(
 
 const attrs = useAttrs()
 
-// 只有在挂载后才渲染真实的图标组件，防止 SSR 报错
-const mounted = ref(false)
-onMounted(() => {
-  mounted.value = true
-})
+// 只有针对第三方动态图标库，如果 serverBundle 没覆盖到，才可能需要 client-only
+// 但为了极致丝滑，我们优先尝试直出
 
-const rootClass = computed(() => {
-  const classes: Array<string | undefined> = ['custom-common-icon']
-  if (attrs.class && typeof attrs.class === 'string') {
-    classes.push(attrs.class)
-  }
-  if (props.svgClass) {
-    classes.push(props.svgClass)
-  }
-  return classes
-})
+const rootClass = computed(() => [
+  'custom-common-icon',
+  'el-icon', // 保持 el-icon 类名以适配 Element Plus 侧边栏收起逻辑
+  attrs.class,
+  props.svgClass
+])
 
 const parsed = computed(() => {
   if (!props.icon) return { prefix: '', name: '' }
   const idx = props.icon.indexOf(':')
+  // 如果没有冒号，默认判定为 ep: (Element Plus)
   if (idx < 0) return { prefix: 'ep:', name: props.icon }
   return {
     prefix: props.icon.slice(0, idx + 1),
@@ -42,6 +36,7 @@ const parsed = computed(() => {
   }
 })
 
+/** Element Plus 图标解析 */
 const epIconComponent = computed(() => {
   const name = parsed.value.name
   if (!name || parsed.value.prefix !== 'ep:') return null
@@ -52,8 +47,13 @@ const epIconComponent = computed(() => {
   return (ElementPlusIcons as Record<string, any>)[pascal] ?? null
 })
 
+/** 判定是否为 Element Plus 图标 */
 const isEp = computed(() => parsed.value.prefix === 'ep:')
-const isFa = computed(() => parsed.value.prefix === 'fa:' || parsed.value.prefix === 'fa-solid:')
+
+/** * 判定是否为其他图标库 (FA6 等)
+ * 只要带冒号且不是 ep:，就交给 @nuxt/icon 处理
+ */
+const isExternalIcon = computed(() => !!props.icon && props.icon.includes(':') && !isEp.value)
 
 const iconStyle = computed(() => ({
   color: props.color,
@@ -64,22 +64,17 @@ const iconStyle = computed(() => ({
 </script>
 
 <template>
-  <el-icon
-    :class="rootClass"
-    :style="iconStyle"
-  >
-    <template v-if="isEp">
-      <component v-if="mounted && epIconComponent" :is="epIconComponent" />
-      <span v-else class="icon-loading-placeholder" />
+  <el-icon :class="rootClass" :style="iconStyle">
+    <template v-if="isEp && epIconComponent">
+      <component :is="epIconComponent" />
     </template>
 
-    <template v-else-if="isFa">
-      <NuxtIcon v-if="mounted" :name="icon ?? ''" />
-      <span v-else class="icon-loading-placeholder" />
+    <template v-else-if="isExternalIcon">
+      <NuxtIcon :name="icon!" />
     </template>
 
     <template v-else>
-      <span class="icon-loading-placeholder">{{ parsed.name || icon }}</span>
+      <span>{{ parsed.name || icon }}</span>
     </template>
   </el-icon>
 </template>
@@ -90,11 +85,12 @@ const iconStyle = computed(() => ({
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  vertical-align: middle;
 }
-.icon-loading-placeholder {
-  display: inline-block;
+/* 确保 NuxtIcon 继承颜色和大小 */
+:deep(.iconify) {
   width: 1em;
   height: 1em;
-  visibility: hidden; /* 占位但不显示，防止水合闪烁 */
+  fill: currentColor;
 }
 </style>

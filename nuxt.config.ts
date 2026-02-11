@@ -161,6 +161,10 @@ export default defineNuxtConfig({
   // @nuxt/icon 配置：避免与自定义 Icon 组件冲突，改用 <NuxtIcon>
   icon: {
     componentName: "NuxtIcon",
+    // 关键：开启服务端捆绑，消除闪烁
+    serverBundle: {
+      collections: ['fa6-solid', 'fa','fa6-brands'], // 确保包含你用到的前缀
+    },
   },
 
   app: {
