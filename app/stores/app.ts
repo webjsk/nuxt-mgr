@@ -1,14 +1,14 @@
-// stores/app.ts
-export const useAppStore = defineStore('app', () => {
+/**
+ * App 全局状态：侧边栏、设备、全屏、标签页、组件尺寸等
+ */
+export const useApp = defineStore('app', () => {
   // ========== 侧边栏状态 ==========
-  const sidebarCollapsed = ref(false)  // 是否折叠
+  const sidebarCollapsed = ref(false)
 
-  // 切换侧边栏
   const toggleSidebar = () => {
     sidebarCollapsed.value = !sidebarCollapsed.value
   }
 
-  // 设置侧边栏状态
   const setSidebarCollapsed = (collapsed: boolean) => {
     sidebarCollapsed.value = collapsed
   }
@@ -16,11 +16,9 @@ export const useAppStore = defineStore('app', () => {
   // ========== 设备检测 ==========
   const isMobile = ref(false)
 
-  // 检测设备
   const checkDevice = () => {
     if (import.meta.client) {
       isMobile.value = window.innerWidth < 768
-      // 移动端默认折叠侧边栏
       if (isMobile.value) {
         sidebarCollapsed.value = true
       }
@@ -30,17 +28,23 @@ export const useAppStore = defineStore('app', () => {
   // ========== 全屏状态 ==========
   const isFullscreen = ref(false)
 
-  // 切换全屏
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen()
       isFullscreen.value = true
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen()
-        isFullscreen.value = false
-      }
+      document.exitFullscreen?.()
+      isFullscreen.value = false
     }
+  }
+
+  // ========== 组件尺寸（影响 Table、Pagination 等紧凑模式） ==========
+  type SizeType = 'default' | 'small'
+
+  const currentSize = ref<SizeType>('default')
+
+  const setCurrentSize = (size: SizeType) => {
+    currentSize.value = size
   }
 
   // ========== 标签页 ==========
@@ -57,7 +61,6 @@ export const useAppStore = defineStore('app', () => {
 
   const activeTab = ref('/')
 
-  // 添加标签页（若已存在则更新 title/icon，保证从菜单解析到的图标能补全）
   const addTab = (tab: Tab) => {
     const exists = tabs.value.find(t => t.path === tab.path)
     if (!exists) {
@@ -69,13 +72,10 @@ export const useAppStore = defineStore('app', () => {
     activeTab.value = tab.path
   }
 
-  // 移除标签页
   const removeTab = (path: string) => {
     const index = tabs.value.findIndex(t => t.path === path)
     if (index > -1) {
       tabs.value.splice(index, 1)
-
-      // 如果删除的是当前标签，跳转到上一个
       if (activeTab.value === path && tabs.value.length > 0) {
         const newActiveTab = tabs.value[Math.max(0, index - 1)]
         activeTab.value = newActiveTab.path
@@ -84,12 +84,10 @@ export const useAppStore = defineStore('app', () => {
     }
   }
 
-  // 关闭其他标签页
   const closeOtherTabs = (path: string) => {
     tabs.value = tabs.value.filter(t => t.path === path || t.path === '/')
   }
 
-  // 关闭所有标签页
   const closeAllTabs = () => {
     tabs.value = [{ path: '/', title: '首页', name: 'index', icon: 'ep:home-filled' }]
     activeTab.value = '/'
@@ -97,20 +95,15 @@ export const useAppStore = defineStore('app', () => {
   }
 
   return {
-    // 侧边栏
     sidebarCollapsed,
     toggleSidebar,
     setSidebarCollapsed,
-
-    // 设备
     isMobile,
     checkDevice,
-
-    // 全屏
     isFullscreen,
     toggleFullscreen,
-
-    // 标签页
+    currentSize,
+    setCurrentSize,
     tabs,
     activeTab,
     addTab,

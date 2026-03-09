@@ -21,7 +21,7 @@
   </template>
   
   <script setup lang="ts">
-  const appStore = useAppStore()
+  const appStore = useApp()
 
   onMounted(() => {
     appStore.checkDevice()

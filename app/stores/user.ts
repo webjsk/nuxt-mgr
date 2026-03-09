@@ -72,7 +72,7 @@ export const useUserStore = defineStore(
         menus.value = [];
         permissions.value = [];
         roles.value = [];
-        useAppStore().closeAllTabs();
+        useApp().closeAllTabs();
         navigateTo("/login");
       }
     };

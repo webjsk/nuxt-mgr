@@ -63,7 +63,7 @@
   
   // 监听路由，添加标签页
   const route = useRoute()
-  const appStore = useAppStore()
+  const appStore = useApp()
   
   onMounted(() => {
     appStore.addTab({

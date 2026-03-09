@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-const appStore = useAppStore()
+const appStore = useApp()
 const userStore = useUserStore()
 const route = useRoute()
 const router = useRouter()

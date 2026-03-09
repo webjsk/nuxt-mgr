@@ -43,7 +43,7 @@ import { Close, More } from "@element-plus/icons-vue";
 import { defaultMenus } from "@/constants/menu";
 
 const route = useRoute();
-const appStore = useAppStore();
+const appStore = useApp();
 const userStore = useUserStore();
 const { t } = useI18n();
 

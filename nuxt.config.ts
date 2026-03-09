@@ -88,8 +88,8 @@ export default defineNuxtConfig({
       redirectOn: "root",
     },
   },
-  // ✅ Pinia 持久化配置
-  piniaPluginPersistedstate: {
+  // ✅ Pinia 持久化配置（模块选项键为 piniaPersistedstate）
+  piniaPersistedstate: {
     storage: "localStorage",
     cookieOptions: {
       sameSite: "strict",
@@ -104,6 +104,8 @@ export default defineNuxtConfig({
         import.meta.env.NUXT_PUBLIC_API_BASE || "https://api-test.xxxx.mx",
       /** 是否启用租户模式，为 'true' 时请求头会携带 tenant-id */
       tenantEnable: import.meta.env.NUXT_PUBLIC_TENANT_ENABLE || "true",
+      /** 展示与转换用的默认时区（IANA 或 Etc/GMT±N），见 app/utils/formatTime.ts */
+      appTimezone: import.meta.env.NUXT_PUBLIC_APP_TIMEZONE || "Etc/GMT+6",
     },
   },
   // 路由规则

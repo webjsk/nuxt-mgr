@@ -76,7 +76,7 @@ import {
   Setting,
   SwitchButton,
 } from "@element-plus/icons-vue";
-const appStore = useAppStore();
+const appStore = useApp();
 const userStore = useUserStore(); // ✅ 使用 userStore
 const handleCommand = (command: string) => {
   switch (command) {
